@@ -165,7 +165,7 @@ export async function runLinux() {
 	]);
 	await utils.exec("bash", [
 		"-c",
-		"mkdir -p ~/.config/rosdistro && echo "index_url: https://raw.github.com/lcas/rosdistro/master/index-v4.yaml" > ~/.config/rosdistro/config.yaml",
+		`mkdir -p ~/.config/rosdistro && echo "index_url: https://raw.github.com/lcas/rosdistro/master/index-v4.yaml" > ~/.config/rosdistro/config.yaml`,
 	]);
 	
 	for (const rosDistro of utils.getRequiredRosDistributions()) {
