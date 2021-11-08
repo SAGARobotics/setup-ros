@@ -118,12 +118,12 @@ export async function runLinux() {
 	await utils.exec("sudo", [
 		"bash",
 		"-c",
-                `curl -s http://lcas.lincoln.ac.uk/repos/public.key | sudo apt-key add -`,
+		`curl -s http://lcas.lincoln.ac.uk/repos/public.key | sudo apt-key add -`,
 	]);
 	await utils.exec("sudo", [
 		"bash",
 		"-c",
-                `echo "deb http://lcas.lincoln.ac.uk/ubuntu/main $(lsb_release -sc) main" > /etc/apt/sources.list.d/lcas-latest.list`,
+		`echo "deb http://lcas.lincoln.ac.uk/ubuntu/main $(lsb_release -sc) main" > /etc/apt/sources.list.d/lcas-latest.list`,
 	]);
 	await utils.exec("sudo", ["apt-get", "update"]);
 
@@ -165,9 +165,9 @@ export async function runLinux() {
 	]);
 	await utils.exec("bash", [
 		"-c",
-		"mkdir -p ~/.config/rosdistro && echo "index_url: https://raw.github.com/lcas/rosdistro/master/index-v4.yaml" > ~/.config/rosdistro/config.yaml",
+		`mkdir -p ~/.config/rosdistro && echo "index_url: https://raw.github.com/lcas/rosdistro/master/index-v4.yaml" > ~/.config/rosdistro/config.yaml`,
 	]);
-	
+
 	for (const rosDistro of utils.getRequiredRosDistributions()) {
 		await apt.runAptGetInstall([`ros-${rosDistro}-desktop`]);
 	}
