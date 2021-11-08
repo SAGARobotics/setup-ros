@@ -114,6 +114,17 @@ export async function runLinux() {
 		}/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros2-latest.list`,
 	]);
 
+	// adding L-CAS repos
+	await utils.exec("sudo", [
+		"bash",
+		"-c",
+                `curl -s http://lcas.lincoln.ac.uk/repos/public.key | sudo apt-key add -`,
+	]);
+	await utils.exec("sudo", [
+		"bash",
+		"-c",
+                `echo "deb http://lcas.lincoln.ac.uk/ubuntu/main $(lsb_release -sc) main" > /etc/apt/sources.list.d/lcas-latest.list`,
+	]);
 	await utils.exec("sudo", ["apt-get", "update"]);
 
 	// Install rosdep and vcs, as well as FastRTPS dependencies, OpenSplice, and
@@ -142,7 +153,21 @@ export async function runLinux() {
 		"rm /etc/ros/rosdep/sources.list.d/20-default.list || true",
 	]);
 	await utils.exec("sudo", ["rosdep", "init"]);
-
+	await utils.exec("sudo", [
+		"bash",
+		"-c",
+		"curl -o /etc/ros/rosdep/sources.list.d/20-default.list https://raw.githubusercontent.com/LCAS/rosdistro/master/rosdep/sources.list.d/20-default.list",
+	]);
+	await utils.exec("sudo", [
+		"bash",
+		"-c",
+		"curl -o /etc/ros/rosdep/sources.list.d/50-lcas.list https://raw.githubusercontent.com/LCAS/rosdistro/master/rosdep/sources.list.d/50-lcas.list",
+	]);
+	await utils.exec("bash", [
+		"-c",
+		"mkdir -p ~/.config/rosdistro && echo "index_url: https://raw.github.com/lcas/rosdistro/master/index-v4.yaml" > ~/.config/rosdistro/config.yaml",
+	]);
+	
 	for (const rosDistro of utils.getRequiredRosDistributions()) {
 		await apt.runAptGetInstall([`ros-${rosDistro}-desktop`]);
 	}
