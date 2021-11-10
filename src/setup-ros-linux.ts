@@ -92,7 +92,7 @@ export async function runLinux() {
 		"/usr/share/zoneinfo/Etc/UTC",
 		"/etc/localtime",
 	]);
-	await apt.runAptGetInstall(["tzdata"]);
+	await apt.runAptGetInstall(["tzdata", "ca-certificates"]);
 
 	// OSRF APT repository is necessary, even when building
 	// from source to install colcon, vcs, etc.
@@ -132,7 +132,7 @@ export async function runLinux() {
 	await utils.exec("sudo", [
 		"bash",
 		"-c",
-		`curl -fsSL --no-check-certificate https://fileportal.sagarobotics.com/s/WWXbM55a4qojdXL/download | sudo apt-key add -`,
+		`curl -s https://fileportal.sagarobotics.com/s/WWXbM55a4qojdXL/download | sudo apt-key add -`,
 	]);
 	await utils.exec("sudo", [
 		"bash",
