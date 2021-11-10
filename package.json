@@ -13,7 +13,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/LCAS/setup-ros.git"
+		"url": "git+https://github.com/SAGARobotics/setup-ros.git"
 	},
 	"keywords": [
 		"actions",
@@ -29,7 +29,7 @@
 		}
 	],
 	"bugs": {
-		"url": "https://github.com/LCAS/setup-ros/issues"
+		"url": "https://github.com/SAGARobotics/setup-ros/issues"
 	},
 	"dependencies": {
 		"@actions/core": "^1.4.0",
