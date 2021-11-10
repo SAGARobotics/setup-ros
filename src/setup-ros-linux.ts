@@ -180,7 +180,7 @@ export async function runLinux() {
 	await utils.exec("sudo", [
 		"bash" ,
 		"-c",
-		"curl -o /etc/ros/rodep/sources.list.d/80-saga.list https://raw.githubusercontent.com/SAGARobotics/rosdistro/master/rosdep/sources.list.d/50-saga.list"
+		"curl -o /etc/ros/rosdep/sources.list.d/80-saga.list https://raw.githubusercontent.com/SAGARobotics/rosdistro/master/rosdep/sources.list.d/50-saga.list"
 	]);
 	await utils.exec("bash", [
 		"-c",
