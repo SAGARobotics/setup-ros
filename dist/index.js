@@ -6342,11 +6342,13 @@ function runLinux() {
             "/usr/share/zoneinfo/Etc/UTC",
             "/etc/localtime",
         ]);
-        yield runAptGetInstall(["tzdata"]);
+        yield runAptGetInstall(["tzdata", "ca-certificates"]);
         // OSRF APT repository is necessary, even when building
         // from source to install colcon, vcs, etc.
         const workspace = process.env.GITHUB_WORKSPACE;
         const keyFilePath = external_path_.join(workspace, "ros.key");
+        const sagauser = core.getInput("saga-deb-read-user");
+        const sagapass = core.getInput("saga-deb-read-pass");
         external_fs_default().writeFileSync(keyFilePath, openRoboticsAptPublicGpgKey);
         yield utils_exec("sudo", ["apt-key", "add", keyFilePath]);
         yield utils_exec("sudo", [
@@ -6358,6 +6360,28 @@ function runLinux() {
             "bash",
             "-c",
             `echo "deb http://packages.ros.org/ros2${use_ros2_testing ? "-testing" : ""}/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros2-latest.list`,
+        ]);
+        // adding L-CAS repos
+        yield utils_exec("sudo", [
+            "bash",
+            "-c",
+            `curl -s http://lcas.lincoln.ac.uk/repos/public.key | sudo apt-key add -`,
+        ]);
+        yield utils_exec("sudo", [
+            "bash",
+            "-c",
+            `echo "deb http://lcas.lincoln.ac.uk/ubuntu/main $(lsb_release -sc) main" > /etc/apt/sources.list.d/lcas-latest.list`,
+        ]);
+        // adding SAGARobotics repo
+        yield utils_exec("sudo", [
+            "bash",
+            "-c",
+            `curl -s https://fileportal.sagarobotics.com/s/WWXbM55a4qojdXL/download | sudo apt-key add -`,
+        ]);
+        yield utils_exec("sudo", [
+            "bash",
+            "-c",
+            `echo "deb https://${sagauser}:${sagapass}@repository.sagarobotics.com/repository/saga-private/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/saga-latest.list`,
         ]);
         yield utils_exec("sudo", ["apt-get", "update"]);
         // Install rosdep and vcs, as well as FastRTPS dependencies, OpenSplice, and
@@ -6383,6 +6407,25 @@ function runLinux() {
             "rm /etc/ros/rosdep/sources.list.d/20-default.list || true",
         ]);
         yield utils_exec("sudo", ["rosdep", "init"]);
+        yield utils_exec("sudo", [
+            "bash",
+            "-c",
+            "curl -o /etc/ros/rosdep/sources.list.d/20-default.list https://raw.githubusercontent.com/LCAS/rosdistro/master/rosdep/sources.list.d/20-default.list",
+        ]);
+        yield utils_exec("sudo", [
+            "bash",
+            "-c",
+            "curl -o /etc/ros/rosdep/sources.list.d/50-lcas.list https://raw.githubusercontent.com/LCAS/rosdistro/master/rosdep/sources.list.d/50-lcas.list",
+        ]);
+        yield utils_exec("sudo", [
+            "bash",
+            "-c",
+            "curl -o /etc/ros/rosdep/sources.list.d/80-saga.list https://raw.githubusercontent.com/SAGARobotics/rosdistro/master/rosdep/sources.list.d/50-saga.list"
+        ]);
+        yield utils_exec("bash", [
+            "-c",
+            `mkdir -p ~/.config/rosdistro && echo "index_url: https://raw.github.com/lcas/rosdistro/master/index-v4.yaml" > ~/.config/rosdistro/config.yaml`,
+        ]);
         for (const rosDistro of getRequiredRosDistributions()) {
             yield runAptGetInstall([`ros-${rosDistro}-desktop`]);
         }
