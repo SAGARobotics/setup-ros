@@ -6,6 +6,14 @@ branding:
   icon: "box"
   color: "gray-dark"
 inputs:
+  saga-deb-read-user:
+    description: |
+      Username for the read-user at SagaRobotics' private APT repository
+    required: true
+  saga-deb-read-pass:
+    description: |
+      Password for the read-user at SagaRobotics' private APT repository
+    required: true
   use-ros2-testing:
     description: |
       Enable use of the ROS2 pre-release testing debs.

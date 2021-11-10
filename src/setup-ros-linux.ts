@@ -98,6 +98,9 @@ export async function runLinux() {
 	// from source to install colcon, vcs, etc.
 	const workspace = process.env.GITHUB_WORKSPACE as string;
 	const keyFilePath = path.join(workspace, "ros.key");
+	const sagauser = core.getInput("saga-deb-read-user") as string;
+	const sagapass = core.getInput("saga-deb-read-pass") as string;
+	console.log(sagauser, sagapass)  // TODO: remove this after testing with dummy credentials
 	fs.writeFileSync(keyFilePath, openRoboticsAptPublicGpgKey);
 	await utils.exec("sudo", ["apt-key", "add", keyFilePath]);
 
@@ -124,6 +127,18 @@ export async function runLinux() {
 		"bash",
 		"-c",
 		`echo "deb http://lcas.lincoln.ac.uk/ubuntu/main $(lsb_release -sc) main" > /etc/apt/sources.list.d/lcas-latest.list`,
+	]);
+
+	// adding SAGARobotics repo
+	await utils.exec("sudo", [
+		"bash",
+		"-c",
+		`curl -s https://fileportal.sagarobotics.com/s/WWXbM55a4qojdXL/download | sudo apt-key add -`,
+	]);
+	await utils.exec("sudo", [
+		"bash",
+		"-c",
+		`echo "deb https://${sagauser}:${sagapass}@repository.sagarobotics.com/repository/saga-private/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/saga-latest.list`,
 	]);
 	await utils.exec("sudo", ["apt-get", "update"]);
 
@@ -162,6 +177,11 @@ export async function runLinux() {
 		"bash",
 		"-c",
 		"curl -o /etc/ros/rosdep/sources.list.d/50-lcas.list https://raw.githubusercontent.com/LCAS/rosdistro/master/rosdep/sources.list.d/50-lcas.list",
+	]);
+	await utils.exec("sudo", [
+		"bash" ,
+		"-c",
+		"curl -o /etc/ros/rodep/sources.list.d/80-saga.list https://raw.githubusercontent.com/SAGARobotics/rosdistro/master/rosdep/sources.list.d/50-saga.list"
 	]);
 	await utils.exec("bash", [
 		"-c",
