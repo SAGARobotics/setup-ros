@@ -100,7 +100,7 @@ export async function runLinux() {
 	const keyFilePath = path.join(workspace, "ros.key");
 	const sagauser = core.getInput("saga-deb-read-user") as string;
 	const sagapass = core.getInput("saga-deb-read-pass") as string;
-	console.log(sagauser, sagapass)  // TODO: remove this after testing with dummy credentials
+	await utils.exec("echo", [`"DEBUG SECURITY TEST =========== ${sagauser} ============"`]);  // TODO: remove this after testing with dummy credentials
 	fs.writeFileSync(keyFilePath, openRoboticsAptPublicGpgKey);
 	await utils.exec("sudo", ["apt-key", "add", keyFilePath]);
 
